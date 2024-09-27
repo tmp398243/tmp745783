@@ -8,7 +8,7 @@ help:
 	@echo "  docsetup       Set up the documentation environment"
 	@echo "  clean_coverage Clean up coverage-related files"
 	@echo "  coverage-lcov  Generate HTML coverage report"
-	@echo "  autoformat     Format Julia code in src, test, docs, ext, and examples directories"
+	@echo "  autoformat     Format Julia code in src, test, docs, and examples directories"
 	@echo "  dev-repl       Start an interactive Julia REPL for development"
 	@echo "  help           Display this help message"
 	@echo
@@ -24,7 +24,7 @@ test:
 .PHONY: autoformat
 
 autoformat:
-	julia -e 'include("ci_scripts/ensure_import.jl"); @ensure_import JuliaFormatter; JuliaFormatter.format(["src", "test", "docs", "ext", "examples"])'
+	julia -e 'include("ci_scripts/ensure_import.jl"); @ensure_import JuliaFormatter; JuliaFormatter.format(["src", "test", "docs", "examples"])'
 
 .PHONY: doc docview docsetup
 
@@ -34,7 +34,7 @@ doc: docsetup
 	$(MAKE) clean_coverage
 	- mv coverage-lcov.info.backup coverage-lcov.info
 	$(DOC_PREFIX) julia --project=docs  --code-coverage=@ docs/make.jl
-	- julia ci_scripts/process_coverage_badge.jl docs/build/coverage/badge.svg coverage-lcov.info ./src ./test ./docs/*.jl ./docs/src ./examples ./ext \
+	- julia ci_scripts/process_coverage_badge.jl docs/build/coverage/badge.svg coverage-lcov.info ./src ./test ./docs/*.jl ./docs/src ./examples \
 	&& $(DOC_PREFIX) $(MAKE) coverage-lcov \
 	&& mkdir -p docs/build/coverage && cp -r coverage-lcov docs/build/coverage/site
 
@@ -47,7 +47,7 @@ docs/Manifest.toml: docs/Project.toml Project.toml
 	julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 
 coverage-lcov.info: */*.cov
-	julia ci_scripts/process_coverage.jl "$@" ./src ./test ./docs/*.jl ./docs/src ./examples ./ext
+	julia ci_scripts/process_coverage.jl "$@" ./src ./test ./docs/*.jl ./docs/src ./examples
 
 coverage-lcov: coverage-lcov.info
 	rm -rf $@
