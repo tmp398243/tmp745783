@@ -1,13 +1,13 @@
-"This module extends PKGNAME with functionality from Random."
+"This module extends Lorenz63Filter with functionality from Random."
 module RandomExt
 
-using PKGNAME: PKGNAME
+using Lorenz63Filter: Lorenz63Filter
 using Random
 
 """
     greeting()
 
-Call [`PKGNAME.greeting`](@ref) with a random name.
+Call [`Lorenz63Filter.greeting`](@ref) with a random name.
 
 
 # Examples
@@ -18,6 +18,6 @@ julia> @test true;
 ```
 
 """
-PKGNAME.greeting() = PKGNAME.greeting(rand(5))
+Lorenz63Filter.greeting() = Lorenz63Filter.greeting(rand(5))
 
 end

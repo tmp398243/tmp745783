@@ -1,27 +1,27 @@
 ```@meta
-CurrentModule = PKGNAME
+CurrentModule = Lorenz63Filter
 ```
 
-# PKGNAME
+# Lorenz63Filter
 
-Documentation for [PKGNAME](https://github.com/gbruer15/PKGNAME.jl).
+Documentation for [Lorenz63Filter](https://github.com/tmp398243/tmp745783).
 
 
 ```@index
-Modules = [PKGNAME]
+Modules = [Lorenz63Filter]
 ```
 
 ```@autodocs
-Modules = [PKGNAME]
+Modules = [Lorenz63Filter]
 ```
 
 
 # Extensions
 
 ```@index
-Modules = [PKGNAME.get_extension(PKGNAME, :RandomExt)]
+Modules = [Lorenz63Filter.get_extension(Lorenz63Filter, :RandomExt)]
 ```
 
 ```@autodocs
-Modules = [PKGNAME.get_extension(PKGNAME, :RandomExt)]
+Modules = [Lorenz63Filter.get_extension(Lorenz63Filter, :RandomExt)]
 ```

@@ -1,23 +1,22 @@
-# PKGNAME
+# Lorenz63Filter
 
 |  |     |
 |--|:---:|
 | [**Documentation**][docs-latest-url]    | [<img src="https://img.shields.io/badge/docs-latest-blue.svg" alt = "doc badge" height="30">][docs-latest-url] |
-| [**CI tests**][checks-url]        | [<img src="https://github.com/gbruer15/PKGNAME.jl/actions/workflows/checks.yaml/badge.svg?branch=main" alt = "CI badge" height="30">][checks-url] |
-| [**Code Coverage**][codecov-url]    | [<img src="https://gbruer15.github.io/PKGNAME.jl/coverage/badge.svg" alt = "coverage badge" height="30">][codecov-url] |
+| [**CI tests**][checks-url]        | [<img src="https://github.com/tmp398243/tmp745783/actions/workflows/checks.yaml/badge.svg?branch=main" alt = "CI badge" height="30">][checks-url] |
+| [**Code Coverage**][codecov-url]    | [<img src="https://tmp398243.github.io/tmp745783/coverage/badge.svg" alt = "coverage badge" height="30">][codecov-url] |
 
-[docs-latest-url]: https://gbruer15.github.io/PKGNAME.jl
-[checks-url]: https://github.com/gbruer15/PKGNAME.jl/actions/workflows/checks.yaml?query=branch%3Amain
-[docs-build-url]: https://github.com/gbruer15/PKGNAME.jl/actions/workflows/docs.yaml?query=branch%3Amain
-[codecov-url]: https://gbruer15.github.io/PKGNAME.jl/coverage/
+[docs-latest-url]: https://tmp398243.github.io/tmp745783
+[checks-url]: https://github.com/tmp398243/tmp745783/actions/workflows/checks.yaml?query=branch%3Amain
+[docs-build-url]: https://github.com/tmp398243/tmp745783/actions/workflows/docs.yaml?query=branch%3Amain
+[codecov-url]: https://tmp398243.github.io/tmp745783/coverage/
 
-This package exists as a template for quickly getting a Julia package set up with continuous integration and documentation support. If you have suggestions for making this better, you are very welcome to make an issue or pull request to discuss it.
 
 ## Repository Structure[^1]
 
 This repository follows a standard Julia project structure:
 
-- `src/`: Contains the main source code for the project with the entrypoint being `src/PKGNAME.jl`.
+- `src/`: Contains the main source code for the project with the entrypoint being `src/Lorenz63Filter.jl`.
 - `test/`: Includes test files for the project with the entrypoint being `test/runtests.jl`.
 - `docs/`: Houses documentation files.
 - `ci_scripts/`: Contains scripts used for continuous integration.
@@ -69,7 +68,7 @@ Runs the project's tests using Julia's package manager with coverage enabled.
 
 #### `make autoformat`
 
-Automatically formats Julia code in the `src`, `test`, `docs`, `ext`, and `examples` directories using JuliaFormatter.
+Automatically formats Julia code in the `src`, `test`, `docs`, and `examples` directories using JuliaFormatter.
 
 #### `make doc`
 
