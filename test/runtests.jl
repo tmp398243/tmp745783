@@ -14,7 +14,9 @@ ts = @testset ReportingTestSet "" begin
     include("test_pkg_stuff.jl")
 
     # Set metadata for doctests.
-    DocMeta.setdocmeta!(Lorenz63Filter, :DocTestSetup, :(using Lorenz63Filter, Test); recursive=true)
+    DocMeta.setdocmeta!(
+        Lorenz63Filter, :DocTestSetup, :(using Lorenz63Filter, Test); recursive=true
+    )
 
     # Run doctests.
     doctest(Lorenz63Filter; manual=true)

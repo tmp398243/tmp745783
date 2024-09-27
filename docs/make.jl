@@ -88,7 +88,9 @@ for (ex, pth) in examples
 end
 
 # Set metadata for doctests.
-DocMeta.setdocmeta!(Lorenz63Filter, :DocTestSetup, :(using Lorenz63Filter, Test); recursive=true)
+DocMeta.setdocmeta!(
+    Lorenz63Filter, :DocTestSetup, :(using Lorenz63Filter, Test); recursive=true
+)
 makedocs(;
     modules=[Lorenz63Filter],
     authors="Grant Bruer gbruer15@gmail.com and contributors",
