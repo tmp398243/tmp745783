@@ -1,6 +1,5 @@
 # # Description
 # This example shows a simple use case for Lorenz63Filter.
-# Specifically, we use the [`greeting`](@ref) function to print greetings.
 #
 # # Environment setup
 # First, we install the necessary packages.

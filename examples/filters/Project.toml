@@ -1,13 +1,8 @@
 [deps]
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
-EnsembleKalmanFilters = "489b957c-0289-4703-8989-7a2007538216"
-Ensembles = "6e62b0a0-f6e2-496f-914a-544f223f57d3"
 InvertibleNetworks = "b7115f24-5f92-4794-81e8-23b0ddb121d3"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-Lorenz63 = "72db8b11-f6a9-4618-8243-341c46e36e41"
-Lorenz63Filter = "92ef830e-fee4-4a21-a24f-3affa31ff52a"
-NormalizingFlowFilters = "bdff3154-b03d-49d9-ae6e-73db1909c910"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
