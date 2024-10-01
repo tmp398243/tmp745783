@@ -5,7 +5,7 @@
 # # Environment setup
 # First, we install the necessary packages.
 
-import Pkg
+using Pkg: Pkg
 
 using Lorenz63Filter
 
@@ -33,7 +33,6 @@ try
 catch
     Ensembles.install(:NormalizingFlowFilters)
 end
-
 
 # Import necessary packages.
 
@@ -71,10 +70,8 @@ worker_initial_imports = @macroexpand1 @initial_imports
 
 params = include("params.jl")
 
-
 # Seed for reproducibility.
 Random.seed!(1983745);
-
 
 # Make operators.
 transitioner = Lorenz63Model(; params)
