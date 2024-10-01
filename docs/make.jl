@@ -30,7 +30,7 @@ end
 build_examples = true
 build_notebooks = true
 build_scripts = true
-examples = ["Simple Usage" => "simple-usage"]
+examples = ["Filters" => "filters"]
 examples_markdown = []
 
 function update_header(content, pth)

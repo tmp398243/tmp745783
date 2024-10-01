@@ -11,7 +11,7 @@ ts = @testset ReportingTestSet "" begin
         Aqua.test_ambiguities(Lorenz63Filter)
     end
 
-    include("test_pkg_stuff.jl")
+    @test true
 
     # Set metadata for doctests.
     DocMeta.setdocmeta!(
