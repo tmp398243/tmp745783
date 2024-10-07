@@ -46,7 +46,7 @@ if haskey(data_initial, "ensembles")
 
     states_vec_gt = get_ensemble_matrix([:state], states_gt)
 
-    t0, tf = extrema(ts)
+    t0, tf = extrema(ts_gt)
     start_gt = searchsortedfirst(ts_gt, t0) 
     finish_gt = searchsortedfirst(ts_gt, tf) 
 

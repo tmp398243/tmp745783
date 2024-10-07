@@ -1,7 +1,5 @@
 
-if abspath(PROGRAM_FILE) == @__FILE__
-    include("install.jl")
-end
+include("install.jl")
 
 using Ensembles: NoisyObserver, get_state_keys, get_ensemble_matrix, split_clean_noisy, xor_seed!
 using Random: Random

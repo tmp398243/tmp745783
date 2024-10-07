@@ -1,9 +1,10 @@
 
 include("install.jl")
 
-using DrWatson: datadir, plotsdir, produce_or_load
+using DrWatson: datadir, plotsdir, produce_or_load, wsave
 using CairoMakie: Label
 using Format: cfmt
+using Lorenz63Filter
 
 include("generate_ground_truth.jl")
 include("utils.jl")
