@@ -31,6 +31,7 @@ build_examples = true
 build_notebooks = true
 build_scripts = true
 examples = ["Filters" => "filters"]
+examples = ["Intense" => "intense"]
 examples_markdown = []
 
 function update_header(content, pth)
@@ -102,7 +103,7 @@ makedocs(;
         canonical="https://tmp398243.github.io/tmp745783",
         edit_link="main",
         assets=String[],
-        size_threshold=2 * 2^20,
+        size_threshold=20 * 2^20,
     ),
     repo="github.com/tmp398243/tmp745783",
     pages=[

@@ -145,10 +145,16 @@ function plot_state_over_time(
     fig = plot_this_thing()
     figs = [fig]
     if !isnothing(max_dt) && ts[1] + max_dt < ts[end]
-        for low in ts[1]:max_dt:ts[end]
+        high = ts[1]
+        for low in ts[1]:max_dt:(ts[end] - max_dt)
             high = min(low + max_dt, ts[end])
             fig = plot_this_thing(; xlims=(; low, high))
             push!(figs, fig)
+        end
+        if high < ts[end]
+            low = ts[end] - max_dt
+            high = ts[end]
+            fig = plot_this_thing(; xlims=(; low, high))
         end
     end
     return figs
@@ -177,10 +183,16 @@ function plot_error_metric_over_time(
     fig = plot_this_thing()
     figs = [fig]
     if !isnothing(max_dt) && ts[1] + max_dt < ts[end]
-        for low in ts[1]:max_dt:ts[end]
+        high = ts[1]
+        for low in ts[1]:max_dt:(ts[end] - max_dt)
             high = min(low + max_dt, ts[end])
             fig = plot_this_thing(; xlims=(; low, high))
             push!(figs, fig)
+        end
+        if high < ts[end]
+            high = ts[end]
+            low = high - max_dt
+            fig = plot_this_thing(; xlims=(; low, high))
         end
     end
     return figs
