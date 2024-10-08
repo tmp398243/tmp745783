@@ -5,7 +5,6 @@ if basename(dirname(Base.active_project())) in ["v1.10", "v1.9", "v1.8", "v1.7",
     Pkg.add("DrWatson")
 
     using DrWatson: @quickactivate
-    Pkg.activate()
     Pkg.activate(joinpath(@__DIR__, ".."))
     @assert basename(dirname(Base.active_project())) == "filter-comparison"
 

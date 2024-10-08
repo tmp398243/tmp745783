@@ -1,6 +1,7 @@
 
 include("install.jl")
 
+using DrWatson: datadir, produce_or_load
 using Ensembles: NoisyObserver, get_state_keys, get_ensemble_matrix, split_clean_noisy, xor_seed!
 using Random: Random
 
@@ -60,16 +61,16 @@ function generate_ground_truth(params::Dict)
     )
 end
 
-if abspath(PROGRAM_FILE) == @__FILE__
-    using DrWatson: datadir, produce_or_load
-
-    # Set parameters.
-    params = include("params.jl")
-
+function produce_or_load_ground_truth(params::Dict; kwargs...)
     params_gt = params["ground_truth"]
     savedir = datadir("ground_truth")
     filename = string(hash(params_gt))
     produce_or_load(generate_ground_truth, params_gt, savedir;
         filename, prefix = "gt", verbose = false, tag = false,
-        loadfile=false)
+        loadfile=false, kwargs...)
+end
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    params = include("params.jl")
+    produce_or_load_ground_truth(params)
 end

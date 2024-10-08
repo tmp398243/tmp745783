@@ -1,6 +1,7 @@
 
 include("install.jl")
 
+using DrWatson: datadir, produce_or_load
 using Ensembles
 using Random: Random
 
@@ -124,17 +125,17 @@ function generate_initial_ensemble(params::Dict)
     )
 end
 
-if abspath(PROGRAM_FILE) == @__FILE__
-    using DrWatson: datadir, produce_or_load
-
-    # Set parameters.
-    params = include("params.jl")
-
+function produce_or_load_initial_ensemble(params::Dict; kwargs...)
     params_ensemble = params["ensemble"]
     params_ensemble["ground_truth"] = params["ground_truth"]
     savedir = datadir("ensemble")
     filename = string(hash(params_ensemble))
     produce_or_load(generate_initial_ensemble, params_ensemble, savedir;
         filename, prefix = "initial_ensemble", verbose = false, tag = false,
-        loadfile=false)
+        loadfile=false, kwargs...)
+end
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    params = include("params.jl")
+    produce_or_load_initial_ensemble(params)
 end

@@ -30,7 +30,12 @@ function get_next_jump_idx(times, idx=1)
     return jump_idx - 1
 end
 
-function plot_disjoint_lines!(ax, times, ys; do_colors=false, connect=nothing, kwargs...)
+function plot_disjoint_lines!(ax, times, ys; disjoint=true, do_colors=false, connect=nothing, kwargs...)
+    if !disjoint
+        scatterlines!(ax, times, ys; kwargs...)
+        return
+    end
+
     end_idx = 0
     color = get(kwargs, :color, nothing)
     if do_colors && !isnothing(color)
@@ -64,7 +69,11 @@ function plot_disjoint_lines!(ax, times, ys; do_colors=false, connect=nothing, k
     end
 end
 
-function plot_disjoint_lines(times, ys; kwargs...)
+function plot_disjoint_lines(times, ys; disjoint=true, kwargs...)
+    if !disjoint
+        return scatterlines(times, ys; kwargs...)
+    end
+
     start_idx = 1
     end_idx = get_next_jump_idx(times, start_idx)
     fig, ax, sc = scatterlines(times[start_idx:end_idx], ys[start_idx:end_idx]; kwargs...)
@@ -155,6 +164,7 @@ function plot_state_over_time(
             low = ts[end] - max_dt
             high = ts[end]
             fig = plot_this_thing(; xlims=(; low, high))
+            push!(figs, fig)
         end
     end
     return figs
@@ -193,6 +203,7 @@ function plot_error_metric_over_time(
             high = ts[end]
             low = high - max_dt
             fig = plot_this_thing(; xlims=(; low, high))
+            push!(figs, fig)
         end
     end
     return figs

@@ -9,12 +9,9 @@ using Lorenz63Filter
 include("generate_ground_truth.jl")
 include("utils.jl")
 
-# Set parameters.
+# Read data.
 params = include("params.jl")
-
-params_gt = params["ground_truth"]
-path = datadir("ground_truth")
-data, file = produce_or_load(generate_ground_truth, params_gt, path; filename = hash, prefix = "ground_truth", verbose = false, tag = false)
+data_gt, _ = produce_or_load_ground_truth(params; loadfile=true)
 
 states = data["states"]
 observations = data["observations"]
