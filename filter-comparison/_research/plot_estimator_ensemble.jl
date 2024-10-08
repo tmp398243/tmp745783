@@ -14,18 +14,7 @@ include("plotting.jl")
 
 # Read data.
 params = include("params.jl")
-data_initial, _ = produce_or_load_initial_ensemble(params; loadfile=true)
 data_gt, _ = produce_or_load_ground_truth(params; loadfile=true)
-
-params_ensemble = params["ensemble"]
-params_ensemble["ground_truth"] = params["ground_truth"]
-savedir = plotsdir("ensemble_initial")
-uniquename = string(hash(params_ensemble, hash(params["ground_truth"])))
-fileprefix = joinpath(savedir, "spinup_" * uniquename)
-
-if haskey(data_initial, "ensembles")
-    plot_ensemble_data(fileprefix, data_initial["ensembles"], data_gt)
-end
 
 savedir = plotsdir("estimator")
 uniquename = string(hash(params))

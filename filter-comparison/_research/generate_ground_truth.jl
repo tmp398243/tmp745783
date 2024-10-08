@@ -2,7 +2,7 @@
 include("install.jl")
 
 using DrWatson: datadir, produce_or_load
-using Ensembles: NoisyObserver, get_state_keys, get_ensemble_matrix, split_clean_noisy, xor_seed!
+using Ensembles: Ensembles, NoisyObserver, get_state_keys, get_ensemble_matrix, split_clean_noisy, xor_seed!
 using Random: Random
 
 using Lorenz63: Lorenz63

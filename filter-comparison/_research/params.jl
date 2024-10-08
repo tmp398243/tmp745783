@@ -119,7 +119,7 @@ params_all = DType(
     "estimator" => DType(
         "assimilation_type" => "monolithic",
         "num_timesteps" => 4000,
-        "transition_noise_scale" => 0.0,
+        "transition_noise_scale" => 1.0,
 
         ## EnKF params
         "algorithm" => "enkf",
