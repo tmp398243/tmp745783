@@ -51,9 +51,6 @@ function generate_ground_truth(params::Dict)
         (; states, observations)
     end
     println("  ^ timing for making ground truth data")
-    ground_truth_states_vec = get_ensemble_matrix([:state], ground_truth.states)
-    ground_truth_obs_vec = get_ensemble_matrix([:state], ground_truth.observations)
-
     data = Dict(
         "states" => ground_truth.states,
         "observations" => ground_truth.observations,
@@ -61,13 +58,22 @@ function generate_ground_truth(params::Dict)
     )
 end
 
+function ground_truth_stem(params::Dict)
+    string(hash(params["ground_truth"]), base=62)
+end
+
 function produce_or_load_ground_truth(params::Dict; kwargs...)
     params_gt = params["ground_truth"]
-    savedir = datadir("ground_truth")
-    filename = string(hash(params_gt))
-    produce_or_load(generate_ground_truth, params_gt, savedir;
-        filename, prefix = "gt", verbose = false, tag = false,
+    filestem = ground_truth_stem(params)
+
+    params_file = datadir("ground_truth", "params", "$filestem.jld2")
+    wsave(params_file, params_gt)
+
+    savedir = datadir("ground_truth", "data")
+    data, filepath = produce_or_load(generate_ground_truth, params_gt, savedir;
+        filename=filestem, verbose = false, tag = false,
         loadfile=false, kwargs...)
+    return data, filepath, filestem
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__

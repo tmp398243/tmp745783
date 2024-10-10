@@ -11,7 +11,7 @@ include("utils.jl")
 
 # Read data.
 params = include("params.jl")
-data_gt, _ = produce_or_load_ground_truth(params; loadfile=true)
+data_gt, _, filestem_gt = produce_or_load_ground_truth(params; loadfile=true)
 
 states = data_gt["states"]
 observations = data_gt["observations"]
@@ -26,9 +26,9 @@ figs = let
 end
 
 params_gt = params["ground_truth"]
-savedir = plotsdir("ground_truth")
-uniquename = string(hash(params_gt))
-fileprefix = joinpath(savedir, "gt_" * uniquename)
+savedir = plotsdir("ground_truth", "states", filestem_gt)
+fileprefix = joinpath(filepath)
 for (i, fig) in enumerate(figs)
-    wsave("$(fileprefix)_$(cfmt("%02d", i)).png", fig) 
+    filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+    wsave(filepath, fig) 
 end

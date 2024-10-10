@@ -1,7 +1,7 @@
 
 include("install.jl")
 
-using DrWatson: datadir, produce_or_load
+using DrWatson: datadir, produce_or_load, wsave
 using Ensembles
 using Random: Random
 
@@ -13,13 +13,13 @@ include("filter.jl")
 include("generate_ground_truth.jl")
 include("generate_initial_ensemble.jl")
 
-function run_filter(params::Dict)
+function run_estimator(params::Dict)
     data_gt, _ = produce_or_load_ground_truth(params; loadfile=true)
 
     data_initial, _ = produce_or_load_initial_ensemble(params; loadfile=true)
 
-    ensemble = data_initial["ensembles"][end].ensemble
-    t0 = data_initial["ensembles"][end].t
+    ensemble = data_initial["ensemble"].ensemble
+    t0 = data_initial["ensemble"].t
 
     states_gt = data_gt["states"]
     observations_gt = data_gt["observations"]
@@ -116,16 +116,24 @@ function run_filter(params::Dict)
     )
 end
 
-function produce_or_load_run_filter(params::Dict; kwargs...)
-    savedir = datadir("ensemble")
-    filename = string(hash(params))
-    params_file = joinpath(savedir, filename)
-    produce_or_load(run_filter, params, savedir;
-        filename, prefix = "run_filter", verbose = false, tag = false,
+function filter_stem(params::Dict)
+    ground_truth_stem(params)*"-"*initial_ensemble_stem(params)*"-"*string(hash(params), base=62)
+end
+
+function produce_or_load_run_estimator(params::Dict; kwargs...)
+    filestem = filter_stem(params)
+
+    params_file = datadir("estimator", "params", "$filestem.jld2")
+    wsave(params_file, params)
+
+    savedir = datadir("estimator", "data")
+    data, filepath = produce_or_load(run_estimator, params, savedir;
+        filename=filestem, verbose = false, tag = false,
         loadfile=false, kwargs...)
+    return data, filepath, filestem
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
     params = include("params.jl")
-    produce_or_load_run_filter(params)
+    produce_or_load_run_estimator(params)
 end

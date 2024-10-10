@@ -125,14 +125,23 @@ function generate_initial_ensemble(params::Dict)
     )
 end
 
+function initial_ensemble_stem(params::Dict)
+    ground_truth_stem(params)*"-"*string(hash(params["ensemble"]), base=62)
+end
+
 function produce_or_load_initial_ensemble(params::Dict; kwargs...)
+    filestem = initial_ensemble_stem(params)
     params_ensemble = params["ensemble"]
     params_ensemble["ground_truth"] = params["ground_truth"]
-    savedir = datadir("ensemble")
-    filename = string(hash(params_ensemble))
-    produce_or_load(generate_initial_ensemble, params_ensemble, savedir;
-        filename, prefix = "initial_ensemble", verbose = false, tag = false,
+
+    params_file = datadir("initial_ensemble", "params", "$filestem.jld2")
+    wsave(params_file, params_ensemble)
+
+    savedir = datadir("initial_ensemble", "data")
+    data, filepath = produce_or_load(generate_initial_ensemble, params_ensemble, savedir;
+        filename=filestem, verbose = false, tag = false,
         loadfile=false, kwargs...)
+    return data, filepath, filestem
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__

@@ -8,7 +8,7 @@ using ImageFiltering: ImageFiltering, imfilter
 
 include("utils.jl")
 
-function plot_ensemble_data(fileprefix, ensembles, data_gt)
+function plot_ensemble_data(savedir_root, ensembles, data_gt)
     states_gt = data_gt["states"]
     observations_gt = data_gt["observations"]
     ts_gt = data_gt["observation_times"]
@@ -22,8 +22,11 @@ function plot_ensemble_data(fileprefix, ensembles, data_gt)
         plot_kwargs = (; disjoint=false, color="#7fc97f", marker='.', markersize=15, markercolor=:black)
         plot_state_over_time(metrics.ts, metrics.means_vec; max_dt=50, plot_kwargs...)
     end
+
+    savedir = joinpath(savedir_root, "mean_state")
     for (i, fig) in enumerate(figs)
-        wsave("$(fileprefix)_$(cfmt("%02d", i)).png", fig) 
+        filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+        wsave(filepath, fig)
     end
 
     t0, tf = extrema(metrics.ts)
@@ -73,8 +76,11 @@ function plot_ensemble_data(fileprefix, ensembles, data_gt)
         )
         plot_state_over_time(metrics.ts, metrics.means_vec; plot_kwargs...)
     end
+
+    savedir = joinpath(savedir_root, "mean_state_gt")
     for (i, fig) in enumerate(figs)
-        wsave("$(fileprefix)_gt_$(cfmt("%02d", i)).png", fig) 
+        filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+        wsave(filepath, fig)
     end
 
     # Plot ensemble mean error over time.
@@ -99,8 +105,11 @@ function plot_ensemble_data(fileprefix, ensembles, data_gt)
         )
         figs = plot_state_over_time(metrics.ts, errors; plot_kwargs...)
     end
+
+    savedir = joinpath(savedir_root, "mean_error")
     for (i, fig) in enumerate(figs)
-        wsave("$(fileprefix)_gt_error_$(cfmt("%02d", i)).png", fig) 
+        filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+        wsave(filepath, fig)
     end
 
     # Plot smoothed ensemble mean error over time.
@@ -122,8 +131,11 @@ function plot_ensemble_data(fileprefix, ensembles, data_gt)
         )
         figs = plot_state_over_time(metrics.ts, smoothed_errors; plot_kwargs...)
     end
+
+    savedir = joinpath(savedir_root, "mean_error_smoothed")
     for (i, fig) in enumerate(figs)
-        wsave("$(fileprefix)_gt_error_smoothed_$(cfmt("%02d", i)).png", fig) 
+        filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+        wsave(filepath, fig)
     end
 
     # Plot smoothed ensemble root mean squared error over time.
@@ -153,16 +165,23 @@ function plot_ensemble_data(fileprefix, ensembles, data_gt)
         end
         figs = plot_state_over_time(metrics.ts, smoothed_errors; handler, plot_kwargs...)
     end
+
+    savedir = joinpath(savedir_root, "mean_abserror_smoothed")
     for (i, fig) in enumerate(figs)
-        wsave("$(fileprefix)_gt_abserror_smoothed_$(cfmt("%02d", i)).png", fig) 
+        filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+        wsave(filepath, fig)
     end
 
     # Plot initial and final ensemble from spinup.
     fig = my_pairplot(ensembles[1].ensemble)
-    wsave("$(fileprefix)_initial.png", fig) 
+    savedir = joinpath(savedir_root, "state")
+    filepath = joinpath(savedir, "initial.png")
+    wsave(filepath, fig)
 
     fig = my_pairplot(ensembles[end].ensemble)
-    wsave("$(fileprefix)_final.png", fig)
+    savedir = joinpath(savedir_root, "state")
+    filepath = joinpath(savedir, "final.png")
+    wsave(filepath, fig)
 
     # Plot standard deviation.
     let
@@ -199,14 +218,18 @@ function plot_ensemble_data(fileprefix, ensembles, data_gt)
             ),
         )
         figs = plot_state_over_time(metrics.ts, metrics.vars_vec .^ 0.5; plot_kwargs...)
+        savedir = joinpath(savedir_root, "std")
         for (i, fig) in enumerate(figs)
-            wsave("$(fileprefix)_gt_std_$(cfmt("%02d", i)).png", fig) 
+            filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+            wsave(filepath, fig)
         end
 
         smoothed_stds = imfilter(metrics.vars_vec, ImageFiltering.Kernel.gaussian((0, N_states * 0.01))) .^ 0.5
         figs = plot_state_over_time(metrics.ts, smoothed_stds; plot_kwargs...)
+        savedir = joinpath(savedir_root, "std_smoothed")
         for (i, fig) in enumerate(figs)
-            wsave("$(fileprefix)_gt_std_smoothed_$(cfmt("%02d", i)).png", fig) 
+            filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+            wsave(filepath, fig)
         end
     end
 
@@ -238,14 +261,18 @@ function plot_ensemble_data(fileprefix, ensembles, data_gt)
             ),
         )
         figs = plot_error_metric_over_time(metrics.ts, metrics.spread; plot_kwargs...)
+        savedir = joinpath(savedir_root, "spread")
         for (i, fig) in enumerate(figs)
-            wsave("$(fileprefix)_gt_spread_$(cfmt("%02d", i)).png", fig) 
+            filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+            wsave(filepath, fig)
         end
 
         smoothed_spread = imfilter(metrics.spread, ImageFiltering.Kernel.gaussian((N_states * 0.01,)))
         figs = plot_error_metric_over_time(metrics.ts, smoothed_spread; plot_kwargs...)
+        savedir = joinpath(savedir_root, "spread_smoothed")
         for (i, fig) in enumerate(figs)
-            wsave("$(fileprefix)_gt_spread_smoothed_$(cfmt("%02d", i)).png", fig) 
+            filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+            wsave(filepath, fig)
         end
     end
 
@@ -277,14 +304,18 @@ function plot_ensemble_data(fileprefix, ensembles, data_gt)
             ),
         )
         figs = plot_error_metric_over_time(metrics.ts, metrics.rmses; plot_kwargs...)
+        savedir = joinpath(savedir_root, "mean_rmse")
         for (i, fig) in enumerate(figs)
-            wsave("$(fileprefix)_gt_rmse_$(cfmt("%02d", i)).png", fig) 
+            filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+            wsave(filepath, fig)
         end
 
         smoothed_rmses = imfilter(metrics.rmses .^ 2, ImageFiltering.Kernel.gaussian((N_states * 0.01,))) .^ 0.5
         figs = plot_error_metric_over_time(metrics.ts, smoothed_rmses; plot_kwargs...)
+        savedir = joinpath(savedir_root, "mean_rmse_smoothed2")
         for (i, fig) in enumerate(figs)
-            wsave("$(fileprefix)_gt_rmse_smoothed_$(cfmt("%02d", i)).png", fig) 
+            filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+            wsave(filepath, fig)
         end
     end
 
@@ -324,11 +355,13 @@ function plot_ensemble_data(fileprefix, ensembles, data_gt)
             plot_kwargs_spread...,
             color = "#e41a1c"
         )
+        savedir = joinpath(savedir_root, "spread_mean_rmse")
         for (i, fig) in enumerate(figs)
             ax = fig.content[1]
             plot_disjoint_lines!(ax, metrics.ts, metrics.rmses; label="rmse", plot_kwargs_rmse...)
             fig[1, 2] = Legend(fig, ax; unique=true)
-            wsave("$(fileprefix)_gt_spread_rmse_$(cfmt("%02d", i)).png", fig) 
+            filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+            wsave(filepath, fig)
         end
 
         # Plot smoothed values.
@@ -336,11 +369,13 @@ function plot_ensemble_data(fileprefix, ensembles, data_gt)
         figs = plot_error_metric_over_time(metrics.ts, smoothed_spread; label="spread", plot_kwargs_full...)
 
         smoothed_rmses = imfilter(metrics.rmses .^ 2, ImageFiltering.Kernel.gaussian((N_states * 0.01,))) .^ 0.5
+        savedir = joinpath(savedir_root, "spread_mean_rmse_smoothed")
         for (i, fig) in enumerate(figs)
             ax = fig.content[1]
             plot_disjoint_lines!(ax, metrics.ts, smoothed_rmses; label="rmse", plot_kwargs_rmse...)
             fig[1, 2] = Legend(fig, ax; unique=true)
-            wsave("$(fileprefix)_gt_spread_rmse_smoothed_$(cfmt("%02d", i)).png", fig) 
+            filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
+            wsave(filepath, fig)
         end
     end
 end
