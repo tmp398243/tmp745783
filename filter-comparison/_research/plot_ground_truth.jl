@@ -13,9 +13,9 @@ include("utils.jl")
 params = include("params.jl")
 data_gt, _ = produce_or_load_ground_truth(params; loadfile=true)
 
-states = data["states"]
-observations = data["observations"]
-observation_times = data["observation_times"]
+states = data_gt["states"]
+observations = data_gt["observations"]
+observation_times = data_gt["observation_times"]
 
 figs = let
     ts = observation_times
@@ -24,6 +24,8 @@ figs = let
     plot_kwargs = (; color="#7fc97f", marker='.', markersize=15, markercolor=:black)
     plot_state_over_time(ts, matrix; max_dt=50, plot_kwargs...)
 end
+
+params_gt = params["ground_truth"]
 savedir = plotsdir("ground_truth")
 uniquename = string(hash(params_gt))
 fileprefix = joinpath(savedir, "gt_" * uniquename)
