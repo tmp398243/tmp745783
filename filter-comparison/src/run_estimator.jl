@@ -1,7 +1,7 @@
 
 include("install.jl")
 
-using DrWatson: datadir, produce_or_load, wsave
+using DrWatson: srcdir, datadir, produce_or_load, wsave
 using Ensembles
 using Random: Random
 
@@ -9,9 +9,9 @@ using Lorenz63: Lorenz63
 ext = Ensembles.get_extension(Ensembles, :Lorenz63Ext)
 using .ext: Lorenz63Model
 
-include("filter.jl")
-include("generate_ground_truth.jl")
-include("generate_initial_ensemble.jl")
+include(srcdir("filter.jl"))
+include(srcdir("generate_ground_truth.jl"))
+include(srcdir("generate_initial_ensemble.jl"))
 
 function run_estimator(params::Dict)
     data_gt, _ = produce_or_load_ground_truth(params; loadfile=true)
@@ -124,6 +124,6 @@ function produce_or_load_run_estimator(params::Dict; kwargs...)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    params = include("params.jl")
+    params = include(ARGS[1])
     produce_or_load_run_estimator(params)
 end

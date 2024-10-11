@@ -1,12 +1,12 @@
 
-using DrWatson: datadir, plotsdir, produce_or_load, wsave
+using DrWatson: srcdir, datadir, plotsdir, produce_or_load, wsave
 using CairoMakie: Label, @L_str, Axis, scatterlines!, ylims!, Legend
 using Format: cfmt
 using Ensembles
 using Lorenz63Filter
 using ImageFiltering: ImageFiltering, imfilter
 
-include("utils.jl")
+include(srcdir("utils.jl"))
 
 function plot_ensemble_data(savedir_root, ensembles, data_gt)
     states_gt = data_gt["states"]

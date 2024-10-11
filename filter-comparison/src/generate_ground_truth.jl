@@ -77,6 +77,6 @@ function produce_or_load_ground_truth(params::Dict; kwargs...)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    params = include("params.jl")
+    params = include(ARGS[1])
     produce_or_load_ground_truth(params)
 end

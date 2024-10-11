@@ -1,7 +1,7 @@
 
 include("install.jl")
 
-using DrWatson: datadir, produce_or_load
+using DrWatson: srcdir, datadir, produce_or_load
 using Ensembles
 using Random: Random
 
@@ -9,8 +9,8 @@ using Lorenz63: Lorenz63
 ext = Ensembles.get_extension(Ensembles, :Lorenz63Ext)
 using .ext: Lorenz63Model
 
-include("filter.jl")
-include("generate_ground_truth.jl")
+include(srcdir("filter.jl"))
+include(srcdir("generate_ground_truth.jl"))
 
 function generate_initial_ensemble(params::Dict)
     seed = params["seed"]
@@ -145,6 +145,6 @@ function produce_or_load_initial_ensemble(params::Dict; kwargs...)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    params = include("params.jl")
+    params = include(ARGS[1])
     produce_or_load_initial_ensemble(params)
 end
