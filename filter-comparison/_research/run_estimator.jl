@@ -18,9 +18,6 @@ function run_estimator(params::Dict)
 
     data_initial, _ = produce_or_load_initial_ensemble(params; loadfile=true)
 
-    ensemble = data_initial["ensemble"].ensemble
-    t0 = data_initial["ensemble"].t
-
     states_gt = data_gt["states"]
     observations_gt = data_gt["observations"]
     ts_gt = data_gt["observation_times"]
@@ -47,22 +44,16 @@ function run_estimator(params::Dict)
     if assimilation_type == "monolithic"
         observers = [observer]
     elseif assimilation_type == "sequential"
-        observer_by_index = function (ensemble, i)
-            ensemble = observer(ensemble)
-            ## Extract the i-th component from each observation.
-            for em in get_ensemble_members(ensemble)
-                for key in get_state_keys(observer)
-                    em[key] = em[key][i]
-                end
-            end
-            return ensemble
-        end
+        y_obs_vec = get_member_vector(ensemble, observations_gt[1])
+        observers = [IndexObserver(observer, i) for i in 1:length(y_obs_vec)]
     else
         error("Unknown assimilation type: $(assimilation_type)")
     end
 
     logs = []
     ensembles = []
+    ensemble = data_initial["ensemble"].ensemble
+    t0 = data_initial["ensemble"].t
     @time begin
         push!(ensembles, (; ensemble, t = t0))
         for (t, y_obs) in zip(ts_gt, observations_gt)
@@ -78,10 +69,9 @@ function run_estimator(params::Dict)
 
             if assimilation_type == "sequential"
                 y_obs_vec = get_member_vector(ensemble, y_obs)
-                observers = [IndexObserver(observer, i) for i in 1:length(y_obs_vec)]
-                y_obs = [observer_i(y_obs) for observer_i in observers]
+                append!(observers, IndexObserver(observer, i) for i in length(observers):length(y_obs_vec))
             else
-                y_obs = [y_obs]
+                y_obs = (y_obs,)
             end
             for (observer_i, y_obs_i) in zip(observers, y_obs)
                 ## Take observation at time t.
