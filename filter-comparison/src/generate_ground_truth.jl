@@ -1,7 +1,7 @@
 
 include("install.jl")
 
-using DrWatson: datadir, produce_or_load
+using DrWatson: wsave, datadir, produce_or_load
 using Ensembles: Ensembles, NoisyObserver, get_state_keys, get_ensemble_matrix, split_clean_noisy, xor_seed!
 using Random: Random
 
@@ -77,6 +77,7 @@ function produce_or_load_ground_truth(params::Dict; kwargs...)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    params = include(ARGS[1])
+    params_file = abspath(ARGS[1])
+    params = include(params_file)
     produce_or_load_ground_truth(params)
 end

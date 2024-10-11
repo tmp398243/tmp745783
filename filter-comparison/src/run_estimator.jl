@@ -124,6 +124,7 @@ function produce_or_load_run_estimator(params::Dict; kwargs...)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    params = include(ARGS[1])
+    params_file = abspath(ARGS[1])
+    params = include(params_file)
     produce_or_load_run_estimator(params)
 end

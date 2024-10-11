@@ -37,11 +37,7 @@ function generate_initial_ensemble(params::Dict)
 
     assimilator = get_filter(params["spinup"])
 
-    params_gt = params["ground_truth"]
-    path = datadir("ground_truth")
-    data_gt, _ = produce_or_load(generate_ground_truth, params_gt, path;
-        filename = hash, prefix = "ground_truth", verbose = false, tag = false)
-
+    data_gt, _ = produce_or_load_ground_truth(params; loadfile=true)
     observations_gt = data_gt["observations"]
     observation_times = data_gt["observation_times"]
 
@@ -145,6 +141,7 @@ function produce_or_load_initial_ensemble(params::Dict; kwargs...)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    params = include(ARGS[1])
+    params_file = abspath(ARGS[1])
+    params = include(params_file)
     produce_or_load_initial_ensemble(params)
 end
