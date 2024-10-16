@@ -46,6 +46,6 @@ end
 
 outputfilename = joinpath(@__DIR__, "..", "report.xml")
 open(outputfilename, "w") do fh
-    print(fh, report(ts))
+    return print(fh, report(ts))
 end
 exit(any_problems(ts))
