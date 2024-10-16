@@ -1,5 +1,3 @@
-refresh_cache = false
-
 function flatten_dict(d, prefix_delim = ".")
     new_d = empty(d, Any)
     for (key, value) in pairs(d)

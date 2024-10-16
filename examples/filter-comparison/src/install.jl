@@ -1,10 +1,7 @@
 
-if basename(dirname(Base.active_project())) in ["v1.10", "v1.9", "v1.8", "v1.7", "v1.6"]
+if ENV["julia_force_install"] == "true" || basename(dirname(Base.active_project())) in ["v1.10", "v1.9", "v1.8", "v1.7", "v1.6"]
     using Pkg: Pkg
 
-    Pkg.add("DrWatson")
-
-    using DrWatson: @quickactivate
     Pkg.activate(joinpath(@__DIR__, ".."))
     @assert basename(dirname(Base.active_project())) == "filter-comparison"
 
@@ -39,7 +36,7 @@ if basename(dirname(Base.active_project())) in ["v1.10", "v1.9", "v1.8", "v1.7",
         Ensembles.install(:NormalizingFlowFilters)
     end
 
-    Pkg.add(["LinearAlgebra", "Random", "CairoMakie", "Statistics", "PairPlots", "ImageFiltering", "JLD2", "Format", "Configurations", "TerminalLoggers", "ProgressLogging", "Logging"])
+    Pkg.add(["DrWatson", "LinearAlgebra", "Random", "CairoMakie", "Statistics", "PairPlots", "ImageFiltering", "JLD2", "Format", "Configurations", "TerminalLoggers", "ProgressLogging", "Logging", "Markdown", "Distributed"])
 
     Pkg.instantiate()
 end
