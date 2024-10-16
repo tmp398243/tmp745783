@@ -2,6 +2,10 @@
 params_file = abspath(ARGS[1])
 include("../src/install.jl")
 
+using TerminalLoggers: TerminalLogger
+using Logging: global_logger
+global_logger(TerminalLogger())
+
 using DrWatson: srcdir, datadir, plotsdir, produce_or_load, wsave
 using CairoMakie: Label, @L_str, Axis, scatterlines!, ylims!, Legend
 using Format: cfmt

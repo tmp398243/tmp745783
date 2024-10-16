@@ -143,7 +143,7 @@ params_transition = DType(
         "ministep_dt" => 0.05,
     )
 params_exec = DType(
-    "workers" => 3,
+    "workers" => 0,
     "transitioner_distributed_type" => :none,
     "observer_distributed_type" => :none,
 )
