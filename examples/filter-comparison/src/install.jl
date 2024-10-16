@@ -10,7 +10,7 @@ if ENV["lorenz63filter_force_install"] == "true" ||
         using Lorenz63Filter: Lorenz63Filter
     catch
         path = get(
-            ENV, "lorenz63filter_force_install", joinpath(@__DIR__, "..", "..", "..")
+            ENV, "lorenz63filter_path", joinpath(@__DIR__, "..", "..", "..")
         )
         Pkg.develop(; path)
     end

@@ -55,7 +55,7 @@ function update_header(content, pth)
 end
 
 mkpath(joinpath(DOC_STAGE, "examples"))
-ENV["lorenz63filter_force_install"] = joinpath(@__DIR__, "..")
+ENV["lorenz63filter_path"] = joinpath(@__DIR__, "..")
 orig_project = Base.active_project()
 orig_logger = global_logger()
 function postprocess(content)
