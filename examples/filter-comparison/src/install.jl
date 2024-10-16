@@ -1,5 +1,5 @@
 
-if ENV["julia_force_install"] == "true" || basename(dirname(Base.active_project())) in ["v1.10", "v1.9", "v1.8", "v1.7", "v1.6"]
+if ENV["lorenz63filter_force_install"] == "true" || basename(dirname(Base.active_project())) in ["v1.10", "v1.9", "v1.8", "v1.7", "v1.6"]
     using Pkg: Pkg
 
     Pkg.activate(joinpath(@__DIR__, ".."))
@@ -8,7 +8,8 @@ if ENV["julia_force_install"] == "true" || basename(dirname(Base.active_project(
     try
         import Lorenz63Filter
     catch
-        Pkg.develop(; path=joinpath(@__DIR__, "..", ".."))
+        path = get(ENV, "lorenz63filter_force_install", joinpath(@__DIR__, "..", "..", ".."))
+        Pkg.develop(; path)
     end
 
     try

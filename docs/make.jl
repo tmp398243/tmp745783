@@ -3,6 +3,7 @@ using Lorenz63Filter
 using Documenter
 
 using Literate
+using Logging: global_logger
 
 const REPO_ROOT = joinpath(@__DIR__, "..")
 const DOC_SRC = joinpath(@__DIR__, "src")
@@ -28,7 +29,7 @@ end
 
 # Process examples and put them in staging area.
 build_examples = true
-build_notebooks = true
+build_notebooks = false
 build_scripts = true
 examples = ["Filters" => "filter-comparison"]
 examples_markdown = []
@@ -54,14 +55,20 @@ function update_header(content, pth)
 end
 
 mkpath(joinpath(DOC_STAGE, "examples"))
+ENV["lorenz63filter_force_install"] = joinpath(@__DIR__, "..")
 orig_project = Base.active_project()
+orig_logger = global_logger()
+function postprocess(content)
+    global_logger(orig_logger)
+    content
+end
 for (ex, pth) in examples
     in_dir = joinpath(REPO_ROOT, "examples", pth)
     in_pth = joinpath(in_dir, "main.jl")
     out_dir = joinpath(DOC_STAGE, "examples", pth)
     if build_examples
         push!(examples_markdown, ex => joinpath("examples", pth, "index.md"))
-        upd(content) = update_header(content, pth)
+        preprocess(content) = update_header(content, pth)
 
         # Copy other files over to out_dir.
         Base.Filesystem.cptree(in_dir, out_dir)
@@ -69,17 +76,15 @@ for (ex, pth) in examples
 
         if isdir(in_dir)
             Pkg.activate(in_dir)
-            Pkg.develop(; path=joinpath(@__DIR__, ".."))
-            Pkg.instantiate()
         end
         try
             # Build outputs.
-            Literate.markdown(in_pth, out_dir; name="index", preprocess=upd, execute=true)
+            Literate.markdown(in_pth, out_dir; name="index", preprocess, postprocess, execute=true)
             if build_notebooks
-                Literate.notebook(in_pth, out_dir)
+                Literate.notebook(in_pth, out_dir; postprocess)
             end
             if build_scripts
-                Literate.script(in_pth, out_dir)
+                Literate.script(in_pth, out_dir; postprocess)
             end
         finally
             Pkg.activate(orig_project)

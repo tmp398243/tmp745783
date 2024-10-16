@@ -1,7 +1,8 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-Lorenz63Filter = "92ef830e-fee4-4a21-a24f-3affa31ff52a"
 Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+Lorenz63Filter = "92ef830e-fee4-4a21-a24f-3affa31ff52a"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
