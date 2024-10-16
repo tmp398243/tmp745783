@@ -65,7 +65,7 @@ report_testsets = @testset ReportingTestSet "" begin
 
             runner_code = gen_runner_code("Example: $(example)", script_path, log_path)
             open(tester_path, "w") do f
-                write(f, runner_code)
+                return write(f, runner_code)
             end
             cmd = `$(Base.julia_cmd()) --color=no -- "$(tester_path)"`
 
@@ -106,7 +106,7 @@ end
 
 outputfilename = joinpath(@__DIR__, "..", "report.xml")
 open(outputfilename, "w") do fh
-    print(fh, a_root)
+    return print(fh, a_root)
 end
 
 exit(any_problems(report_testsets) || length(errs) > 0)
