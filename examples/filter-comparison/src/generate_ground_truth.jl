@@ -25,7 +25,7 @@ function generate_ground_truth(params::Dict)
     observation_times = let
         step = params["observation"]["timestep_size"]
         length = params["observation"]["num_timesteps"] + 1
-        range(; start=0, length, step)::Vector{Float64}
+        range(; start=0, length, step)
     end
 
     ## Make operators.
