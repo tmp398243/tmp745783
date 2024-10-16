@@ -1,6 +1,11 @@
 
 include("install.jl")
 
+using TerminalLoggers: TerminalLogger
+using Logging: global_logger
+using ProgressLogging: @progress
+isinteractive() && global_logger(TerminalLogger())
+
 using DrWatson: wsave, datadir, produce_or_load
 using Ensembles:
     Ensembles,
@@ -20,7 +25,7 @@ function generate_ground_truth(params::Dict)
     observation_times = let
         step = params["observation"]["timestep_size"]
         length = params["observation"]["num_timesteps"] + 1
-        range(; start=0, length, step)
+        range(; start=0, length, step)::Vector{Float64}
     end
 
     ## Make operators.
@@ -42,16 +47,15 @@ function generate_ground_truth(params::Dict)
         t0 = 0.0
         states = Vector{Dict{Symbol,Any}}(undef, length(observation_times))
         observations = Vector{Dict{Symbol,Any}}(undef, length(observation_times))
-        let state = state0
-            states[1] = state0
-            observations[1] = observer(state0)
-            for (i, t) in enumerate(observation_times[2:end])
-                state = transitioner(state, t0, t)
-                obs = observer(state)
-                states[i + 1] = state
-                observations[i + 1] = split_clean_noisy(observer, obs)[2]
-                t0 = t
-            end
+        state = state0
+        states[1] = state0
+        observations[1] = observer(state0)
+        @progress "Ground-truth" for (i, t) in enumerate(observation_times[2:end])
+            state = transitioner(state, t0, t)
+            obs = observer(state)
+            states[i + 1] = state
+            observations[i + 1] = split_clean_noisy(observer, obs)[2]
+            t0 = t
         end
         (; states, observations)
     end

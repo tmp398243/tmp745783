@@ -1,5 +1,5 @@
 
-if ENV["lorenz63filter_force_install"] == "true" ||
+if get(ENV, "lorenz63filter_force_install", "false") == "true" ||
     basename(dirname(Base.active_project())) in ["v1.10", "v1.9", "v1.8", "v1.7", "v1.6"]
     using Pkg: Pkg
 
