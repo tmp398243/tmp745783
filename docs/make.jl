@@ -60,7 +60,7 @@ orig_project = Base.active_project()
 orig_logger = global_logger()
 function postprocess(content)
     global_logger(orig_logger)
-    content
+    return content
 end
 for (ex, pth) in examples
     in_dir = joinpath(REPO_ROOT, "examples", pth)
@@ -79,7 +79,9 @@ for (ex, pth) in examples
         end
         try
             # Build outputs.
-            Literate.markdown(in_pth, out_dir; name="index", preprocess, postprocess, execute=true)
+            Literate.markdown(
+                in_pth, out_dir; name="index", preprocess, postprocess, execute=true
+            )
             if build_notebooks
                 Literate.notebook(in_pth, out_dir; postprocess)
             end

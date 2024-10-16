@@ -18,9 +18,15 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
     N_states = length(metrics.ts)
 
     # Plot state over time.
-    @withprogress name="mean_state vs t" let
+    @withprogress name = "mean_state vs t" let
         figs = let
-            plot_kwargs = (; disjoint=false, color="#7fc97f", marker='.', markersize=15, markercolor=:black)
+            plot_kwargs = (;
+                disjoint=false,
+                color="#7fc97f",
+                marker='.',
+                markersize=15,
+                markercolor=:black,
+            )
             plot_state_over_time(metrics.ts, metrics.means_vec; max_dt=50, plot_kwargs...)
         end
 
@@ -28,37 +34,52 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
         for (i, fig) in enumerate(figs)
             filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
             wsave(filepath, fig)
-            @logprogress i/length(figs)
+            @logprogress i / length(figs)
         end
     end
 
     t0, tf = extrema(metrics.ts)
-    start_gt = searchsortedfirst(ts_gt, t0) 
-    finish_gt = searchsortedfirst(ts_gt, tf) 
+    start_gt = searchsortedfirst(ts_gt, t0)
+    finish_gt = searchsortedfirst(ts_gt, tf)
 
     # Plot state over time with ground truth state.
-    @withprogress name="mean_state_gt vs t" let
+    @withprogress name = "mean_state_gt vs t" let
         figs = let
             xs_gt = view(ground_truth_states_vec, 1, :)
             ys_gt = view(ground_truth_states_vec, 2, :)
             zs_gt = view(ground_truth_states_vec, 3, :)
 
             gt_kwargs = (;
-                color = ("#d95f02", 0.5),
-                marker = '.',
-                markersize = 15,
-                markercolor = (:yellow, 0.5),
+                color=("#d95f02", 0.5),
+                marker='.',
+                markersize=15,
+                markercolor=(:yellow, 0.5),
             )
 
             handler = function (fig)
                 for ax in fig.content
                     if isa(ax, Axis)
                         if ax.ylabel[] == L"\text{x}"
-                            scatterlines!(ax, ts_gt[start_gt:finish_gt], xs_gt[start_gt:finish_gt]; gt_kwargs...)
+                            scatterlines!(
+                                ax,
+                                ts_gt[start_gt:finish_gt],
+                                xs_gt[start_gt:finish_gt];
+                                gt_kwargs...,
+                            )
                         elseif ax.ylabel[] == L"\text{y}"
-                            scatterlines!(ax, ts_gt[start_gt:finish_gt], ys_gt[start_gt:finish_gt]; gt_kwargs...)
+                            scatterlines!(
+                                ax,
+                                ts_gt[start_gt:finish_gt],
+                                ys_gt[start_gt:finish_gt];
+                                gt_kwargs...,
+                            )
                         elseif ax.ylabel[] == L"\text{z}"
-                            scatterlines!(ax, ts_gt[start_gt:finish_gt], zs_gt[start_gt:finish_gt]; gt_kwargs...)
+                            scatterlines!(
+                                ax,
+                                ts_gt[start_gt:finish_gt],
+                                zs_gt[start_gt:finish_gt];
+                                gt_kwargs...,
+                            )
                         end
                     end
                 end
@@ -66,17 +87,12 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
             plot_kwargs = (;
                 handler,
                 disjoint=false,
-                max_dt = 50,
-                color = "#7fc97f",
-                marker = '.',
-                markersize = 0,
-                markercolor = :black,
-                connect = (;
-                    linestyle = :dash,
-                    color = [1, 2],
-                    colormap = :BuGn,
-                    markersize = 0,
-                ),
+                max_dt=50,
+                color="#7fc97f",
+                marker='.',
+                markersize=0,
+                markercolor=:black,
+                connect=(; linestyle=:dash, color=[1, 2], colormap=:BuGn, markersize=0),
             )
             plot_state_over_time(metrics.ts, metrics.means_vec; plot_kwargs...)
         end
@@ -85,7 +101,7 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
         for (i, fig) in enumerate(figs)
             filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
             wsave(filepath, fig)
-            @logprogress i/length(figs)
+            @logprogress i / length(figs)
         end
     end
 
@@ -94,21 +110,16 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
     for (i, gt_index) in enumerate(metrics.gt_indices)
         errors[:, i] = metrics.means_vec[:, i] .- ground_truth_states_vec[:, gt_index]
     end
-    @withprogress name="mean_error vs t" let
+    @withprogress name = "mean_error vs t" let
         figs = let
             plot_kwargs = (;
                 disjoint=false,
-                max_dt = 50,
-                color = "#7fc97f",
-                marker = '.',
-                markersize = 0,
-                markercolor = :black,
-                connect = (;
-                    linestyle = :dash,
-                    color = [1, 2],
-                    colormap = :BuGn,
-                    markersize = 0,
-                ),
+                max_dt=50,
+                color="#7fc97f",
+                marker='.',
+                markersize=0,
+                markercolor=:black,
+                connect=(; linestyle=:dash, color=[1, 2], colormap=:BuGn, markersize=0),
             )
             figs = plot_state_over_time(metrics.ts, errors; plot_kwargs...)
         end
@@ -117,27 +128,24 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
         for (i, fig) in enumerate(figs)
             filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
             wsave(filepath, fig)
-            @logprogress i/length(figs)
+            @logprogress i / length(figs)
         end
     end
 
     # Plot smoothed ensemble mean error over time.
-    @withprogress name="mean_error vs t" let
+    @withprogress name = "mean_error vs t" let
         figs = let
-            smoothed_errors = imfilter(errors, ImageFiltering.Kernel.gaussian((0, N_states * 0.01)))
+            smoothed_errors = imfilter(
+                errors, ImageFiltering.Kernel.gaussian((0, N_states * 0.01))
+            )
             plot_kwargs = (;
                 disjoint=false,
-                max_dt = 50,
-                color = "#7fc97f",
-                marker = '.',
-                markersize = 0,
-                markercolor = :black,
-                connect = (;
-                    linestyle = :dash,
-                    color = [1, 2],
-                    colormap = :BuGn,
-                    markersize = 0,
-                ),
+                max_dt=50,
+                color="#7fc97f",
+                marker='.',
+                markersize=0,
+                markercolor=:black,
+                connect=(; linestyle=:dash, color=[1, 2], colormap=:BuGn, markersize=0),
             )
             figs = plot_state_over_time(metrics.ts, smoothed_errors; plot_kwargs...)
         end
@@ -146,28 +154,25 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
         for (i, fig) in enumerate(figs)
             filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
             wsave(filepath, fig)
-            @logprogress i/length(figs)
+            @logprogress i / length(figs)
         end
     end
 
     # Plot smoothed ensemble abs error over time.
-    @withprogress name="mean_abserror_smoothed vs t" let
+    @withprogress name = "mean_abserror_smoothed vs t" let
         figs = let
-            smoothed_errors = imfilter(errors .^ 2, ImageFiltering.Kernel.gaussian((0, N_states * 0.01)))
+            smoothed_errors = imfilter(
+                errors .^ 2, ImageFiltering.Kernel.gaussian((0, N_states * 0.01))
+            )
             smoothed_errors .^= 0.5
             plot_kwargs = (;
                 disjoint=false,
-                max_dt = 50,
-                color = "#7fc97f",
-                marker = '.',
-                markersize = 0,
-                markercolor = :black,
-                connect = (;
-                    linestyle = :dash,
-                    color = [1, 2],
-                    colormap = :BuGn,
-                    markersize = 0,
-                ),
+                max_dt=50,
+                color="#7fc97f",
+                marker='.',
+                markersize=0,
+                markercolor=:black,
+                connect=(; linestyle=:dash, color=[1, 2], colormap=:BuGn, markersize=0),
             )
             function handler(fig)
                 for c in fig.content
@@ -176,7 +181,9 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
                     end
                 end
             end
-            figs = plot_state_over_time(metrics.ts, smoothed_errors; handler, plot_kwargs...)
+            figs = plot_state_over_time(
+                metrics.ts, smoothed_errors; handler, plot_kwargs...
+            )
         end
 
         savedir = joinpath(savedir_root, "mean_abserror_smoothed")
@@ -198,7 +205,7 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
     wsave(filepath, fig)
 
     # Plot standard deviation.
-    @withprogress name="std vs t" let
+    @withprogress name = "std vs t" let
         handler = function (fig)
             for ax in fig.content
                 if isa(ax, Axis)
@@ -218,18 +225,13 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
         plot_kwargs = (;
             handler,
             disjoint=false,
-            max_dt = 50,
-            make_positive = true,
-            color = "#7fc97f",
-            marker = '.',
-            markersize = 0,
-            markercolor = :black,
-            connect = (;
-                linestyle = :dash,
-                color = [1, 2],
-                colormap = :BuGn,
-                markersize = 0,
-            ),
+            max_dt=50,
+            make_positive=true,
+            color="#7fc97f",
+            marker='.',
+            markersize=0,
+            markercolor=:black,
+            connect=(; linestyle=:dash, color=[1, 2], colormap=:BuGn, markersize=0),
         )
         figs = plot_state_over_time(metrics.ts, metrics.vars_vec .^ 0.5; plot_kwargs...)
         savedir = joinpath(savedir_root, "std")
@@ -238,18 +240,21 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
             wsave(filepath, fig)
         end
 
-        smoothed_stds = imfilter(metrics.vars_vec, ImageFiltering.Kernel.gaussian((0, N_states * 0.01))) .^ 0.5
+        smoothed_stds =
+            imfilter(
+                metrics.vars_vec, ImageFiltering.Kernel.gaussian((0, N_states * 0.01))
+            ) .^ 0.5
         figs = plot_state_over_time(metrics.ts, smoothed_stds; plot_kwargs...)
         savedir = joinpath(savedir_root, "std_smoothed")
         for (i, fig) in enumerate(figs)
             filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
             wsave(filepath, fig)
-            @logprogress i/length(figs)
+            @logprogress i / length(figs)
         end
     end
 
     # Plot ensemble spread.
-    @withprogress name="spread vs t" let
+    @withprogress name = "spread vs t" let
         handler = function (fig)
             for ax in fig.content
                 if isa(ax, Axis)
@@ -263,17 +268,12 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
         plot_kwargs = (;
             handler,
             disjoint=false,
-            max_dt = 50,
-            color = "#041a1c",
-            marker = '.',
-            markersize = 15,
-            markercolor = :black,
-            connect = (;
-                linestyle = :dash,
-                color = [1, 2],
-                colormap = :BuGn,
-                markersize = 0,
-            ),
+            max_dt=50,
+            color="#041a1c",
+            marker='.',
+            markersize=15,
+            markercolor=:black,
+            connect=(; linestyle=:dash, color=[1, 2], colormap=:BuGn, markersize=0),
         )
         figs = plot_error_metric_over_time(metrics.ts, metrics.spread; plot_kwargs...)
         savedir = joinpath(savedir_root, "spread")
@@ -282,18 +282,20 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
             wsave(filepath, fig)
         end
 
-        smoothed_spread = imfilter(metrics.spread, ImageFiltering.Kernel.gaussian((N_states * 0.01,)))
+        smoothed_spread = imfilter(
+            metrics.spread, ImageFiltering.Kernel.gaussian((N_states * 0.01,))
+        )
         figs = plot_error_metric_over_time(metrics.ts, smoothed_spread; plot_kwargs...)
         savedir = joinpath(savedir_root, "spread_smoothed")
         for (i, fig) in enumerate(figs)
             filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
             wsave(filepath, fig)
-            @logprogress i/length(figs)
+            @logprogress i / length(figs)
         end
     end
 
     # Plot RMSE.
-    @withprogress name="rmse vs t" let
+    @withprogress name = "rmse vs t" let
         handler = function (fig)
             for ax in fig.content
                 if isa(ax, Axis)
@@ -307,39 +309,36 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
         plot_kwargs = (;
             handler,
             disjoint=false,
-            max_dt = 50,
-            color = "#e41a1c",
-            marker = '.',
-            markersize = 15,
-            markercolor = :black,
-            connect = (;
-                linestyle = :dash,
-                color = [1, 2],
-                colormap = :BuGn,
-                markersize = 0,
-            ),
+            max_dt=50,
+            color="#e41a1c",
+            marker='.',
+            markersize=15,
+            markercolor=:black,
+            connect=(; linestyle=:dash, color=[1, 2], colormap=:BuGn, markersize=0),
         )
         figs = plot_error_metric_over_time(metrics.ts, metrics.rmses; plot_kwargs...)
         savedir = joinpath(savedir_root, "mean_rmse")
         for (i, fig) in enumerate(figs)
             filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
             wsave(filepath, fig)
-            @logprogress i/length(figs)
+            @logprogress i / length(figs)
         end
 
-        smoothed_rmses = imfilter(metrics.rmses .^ 2, ImageFiltering.Kernel.gaussian((N_states * 0.01,))) .^ 0.5
+        smoothed_rmses =
+            imfilter(
+                metrics.rmses .^ 2, ImageFiltering.Kernel.gaussian((N_states * 0.01,))
+            ) .^ 0.5
         figs = plot_error_metric_over_time(metrics.ts, smoothed_rmses; plot_kwargs...)
         savedir = joinpath(savedir_root, "mean_rmse_smoothed2")
         for (i, fig) in enumerate(figs)
             filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
             wsave(filepath, fig)
-            @logprogress i/length(figs)
+            @logprogress i / length(figs)
         end
     end
 
-
     # Plot ensemble spread and RMSE.
-    @withprogress name="spread_mean_rmse vs t" let
+    @withprogress name = "spread_mean_rmse vs t" let
         handler = function (fig)
             for ax in fig.content
                 if isa(ax, Axis)
@@ -351,51 +350,52 @@ function plot_ensemble_data(savedir_root, ensembles, data_gt)
         end
         plot_kwargs_spread = (;
             disjoint=false,
-            color = "#041a1c",
-            marker = '.',
-            markersize = 15,
-            markercolor = :black,
-            connect = (;
-                linestyle = :dash,
-                color = [1, 2],
-                colormap = :BuGn,
-                markersize = 0,
-            ),
+            color="#041a1c",
+            marker='.',
+            markersize=15,
+            markercolor=:black,
+            connect=(; linestyle=:dash, color=[1, 2], colormap=:BuGn, markersize=0),
         )
-        plot_kwargs_full = (;
-            handler,
-            max_dt = 50,
-            plot_kwargs_spread...
+        plot_kwargs_full = (; handler, max_dt=50, plot_kwargs_spread...)
+        figs = plot_error_metric_over_time(
+            metrics.ts, metrics.spread; label="spread", plot_kwargs_full...
         )
-        figs = plot_error_metric_over_time(metrics.ts, metrics.spread; label="spread", plot_kwargs_full...)
 
-        plot_kwargs_rmse = (;
-            plot_kwargs_spread...,
-            color = "#e41a1c"
-        )
+        plot_kwargs_rmse = (; plot_kwargs_spread..., color="#e41a1c")
         savedir = joinpath(savedir_root, "spread_mean_rmse")
         for (i, fig) in enumerate(figs)
             ax = fig.content[1]
-            plot_disjoint_lines!(ax, metrics.ts, metrics.rmses; label="rmse", plot_kwargs_rmse...)
+            plot_disjoint_lines!(
+                ax, metrics.ts, metrics.rmses; label="rmse", plot_kwargs_rmse...
+            )
             fig[1, 2] = Legend(fig, ax; unique=true)
             filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
             wsave(filepath, fig)
-            @logprogress i/length(figs)
+            @logprogress i / length(figs)
         end
 
         # Plot smoothed values.
-        smoothed_spread = imfilter(metrics.spread, ImageFiltering.Kernel.gaussian((N_states * 0.01,)))
-        figs = plot_error_metric_over_time(metrics.ts, smoothed_spread; label="spread", plot_kwargs_full...)
+        smoothed_spread = imfilter(
+            metrics.spread, ImageFiltering.Kernel.gaussian((N_states * 0.01,))
+        )
+        figs = plot_error_metric_over_time(
+            metrics.ts, smoothed_spread; label="spread", plot_kwargs_full...
+        )
 
-        smoothed_rmses = imfilter(metrics.rmses .^ 2, ImageFiltering.Kernel.gaussian((N_states * 0.01,))) .^ 0.5
+        smoothed_rmses =
+            imfilter(
+                metrics.rmses .^ 2, ImageFiltering.Kernel.gaussian((N_states * 0.01,))
+            ) .^ 0.5
         savedir = joinpath(savedir_root, "spread_mean_rmse_smoothed")
         for (i, fig) in enumerate(figs)
             ax = fig.content[1]
-            plot_disjoint_lines!(ax, metrics.ts, smoothed_rmses; label="rmse", plot_kwargs_rmse...)
+            plot_disjoint_lines!(
+                ax, metrics.ts, smoothed_rmses; label="rmse", plot_kwargs_rmse...
+            )
             fig[1, 2] = Legend(fig, ax; unique=true)
             filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
             wsave(filepath, fig)
-            @logprogress i/length(figs)
+            @logprogress i / length(figs)
         end
     end
 end

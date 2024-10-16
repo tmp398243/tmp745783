@@ -1,22 +1,25 @@
 
-if ENV["lorenz63filter_force_install"] == "true" || basename(dirname(Base.active_project())) in ["v1.10", "v1.9", "v1.8", "v1.7", "v1.6"]
+if ENV["lorenz63filter_force_install"] == "true" ||
+    basename(dirname(Base.active_project())) in ["v1.10", "v1.9", "v1.8", "v1.7", "v1.6"]
     using Pkg: Pkg
 
     Pkg.activate(joinpath(@__DIR__, ".."))
     @assert basename(dirname(Base.active_project())) == "filter-comparison"
 
     try
-        import Lorenz63Filter
+        using Lorenz63Filter: Lorenz63Filter
     catch
-        path = get(ENV, "lorenz63filter_force_install", joinpath(@__DIR__, "..", "..", ".."))
+        path = get(
+            ENV, "lorenz63filter_force_install", joinpath(@__DIR__, "..", "..", "..")
+        )
         Pkg.develop(; path)
     end
 
     try
-        import Ensembles
+        using Ensembles: Ensembles
     catch
         Pkg.add(; url="https://github.com/tmp398243/tmp32487543")
-        import Ensembles
+        using Ensembles: Ensembles
     end
 
     try
@@ -37,7 +40,23 @@ if ENV["lorenz63filter_force_install"] == "true" || basename(dirname(Base.active
         Ensembles.install(:NormalizingFlowFilters)
     end
 
-    Pkg.add(["DrWatson", "LinearAlgebra", "Random", "CairoMakie", "Statistics", "PairPlots", "ImageFiltering", "JLD2", "Format", "Configurations", "TerminalLoggers", "ProgressLogging", "Logging", "Markdown", "Distributed"])
+    Pkg.add([
+        "DrWatson",
+        "LinearAlgebra",
+        "Random",
+        "CairoMakie",
+        "Statistics",
+        "PairPlots",
+        "ImageFiltering",
+        "JLD2",
+        "Format",
+        "Configurations",
+        "TerminalLoggers",
+        "ProgressLogging",
+        "Logging",
+        "Markdown",
+        "Distributed",
+    ])
 
     Pkg.instantiate()
 end

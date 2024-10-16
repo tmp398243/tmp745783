@@ -30,10 +30,12 @@ function get_next_jump_idx(times, idx=1)
     return jump_idx - 1
 end
 
-function plot_disjoint_lines!(ax, times, ys; disjoint=true, do_colors=false, connect=nothing, kwargs...)
+function plot_disjoint_lines!(
+    ax, times, ys; disjoint=true, do_colors=false, connect=nothing, kwargs...
+)
     if !disjoint
         scatterlines!(ax, times, ys; kwargs...)
-        return
+        return nothing
     end
 
     end_idx = 0

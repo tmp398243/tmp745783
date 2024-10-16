@@ -1,10 +1,10 @@
 # Define parameters.
-DType = Dict{String, Any}
+DType = Dict{String,Any}
 
 params_transition = DType(
     "sigma" => 10,
     "rho" => 28,
-    "beta" => 8/3,
+    "beta" => 8 / 3,
     "scaling" => 1,
     "ministep_nt" => missing,
     "ministep_dt" => 0.05,
@@ -21,11 +21,8 @@ params = DType(
     "ground_truth" => DType(
         "format" => "v0.1",
         "transition" => params_transition,
-        "observation" => DType(
-            "noise_scale" => 2,
-            "timestep_size" => 0.1,
-            "num_timesteps" => 600,
-        ),
+        "observation" =>
+            DType("noise_scale" => 2, "timestep_size" => 0.1, "num_timesteps" => 600),
     ),
     "ensemble" => DType(
         "size" => 100,

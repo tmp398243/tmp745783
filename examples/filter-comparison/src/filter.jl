@@ -1,6 +1,13 @@
 using LinearAlgebra: Diagonal
 using EnsembleKalmanFilters: EnKF
-using NormalizingFlowFilters: cpu, ConditionalGlowOptions, NetworkConditionalGlow, OptimizerOptions, create_optimizer, TrainingOptions, NormalizingFlowFilter
+using NormalizingFlowFilters:
+    cpu,
+    ConditionalGlowOptions,
+    NetworkConditionalGlow,
+    OptimizerOptions,
+    create_optimizer,
+    TrainingOptions,
+    NormalizingFlowFilter
 using Configurations: from_dict
 
 function Ensembles.assimilate_data(
@@ -23,7 +30,6 @@ function Ensembles.assimilate_data(
     return posterior
 end
 
-
 function get_filter(params)
     alg = params["algorithm"]
     if alg == "enkf"
@@ -35,7 +41,7 @@ function get_filter(params)
         else
             throw(ArgumentError("Unknown observation noise type: $noise_type"))
         end
-        filter = EnKF(R; params);
+        filter = EnKF(R; params)
         return filter
     elseif alg == "nf"
         glow_config = from_dict(ConditionalGlowOptions, params["glow"]; chan_x=3, chan_y=3)

@@ -29,5 +29,5 @@ end
 savedir = plotsdir("ground_truth", "states", filestem_gt)
 @time for (i, fig) in enumerate(figs)
     filepath = joinpath(savedir, "$(cfmt("%02d", i)).png")
-    wsave(filepath, fig) 
+    wsave(filepath, fig)
 end

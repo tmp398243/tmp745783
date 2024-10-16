@@ -39,8 +39,8 @@ function run_estimator(params::Dict)
     params_estimator = params["estimator"]
     estimator = get_filter(params_estimator)
 
-    transitioner = Lorenz63Model(; params = params["ground_truth"])
-    observer = NoisyObserver(get_state_keys(transitioner); params = params["ground_truth"]);
+    transitioner = Lorenz63Model(; params=params["ground_truth"])
+    observer = NoisyObserver(get_state_keys(transitioner); params=params["ground_truth"])
 
     ensemble = data_initial["ensemble"].ensemble
     t0 = data_initial["ensemble"].t
@@ -73,7 +73,17 @@ function run_estimator(params::Dict)
             kwargs = get(exec_params, "observer_distributed_kwargs", ())
             observer = get_distributed_operator(observer, worker_pool, t, kwargs)
         end
-        filter_loop(ensemble, t0, estimator, transitioner, observer, observations_gt, ts_gt, params_estimator; name=params_estimator["algorithm"])
+        filter_loop(
+            ensemble,
+            t0,
+            estimator,
+            transitioner,
+            observer,
+            observations_gt,
+            ts_gt,
+            params_estimator;
+            name=params_estimator["algorithm"],
+        )
     finally
         if cleanup_workers
             rmprocs(workers)
@@ -83,7 +93,11 @@ end
 
 function filter_stem(params::Dict)
     # TODO: shouldn't include "exec" params in this hash.
-    ground_truth_stem(params)*"-"*initial_ensemble_stem(params)*"-"*string(hash(params), base=62)
+    return ground_truth_stem(params) *
+           "-" *
+           initial_ensemble_stem(params) *
+           "-" *
+           string(hash(params); base=62)
 end
 
 function produce_or_load_run_estimator(params::Dict; kwargs...)
@@ -93,9 +107,16 @@ function produce_or_load_run_estimator(params::Dict; kwargs...)
     wsave(params_file, params)
 
     savedir = datadir("estimator", "data")
-    data, filepath = produce_or_load(run_estimator, params, savedir;
-        filename=filestem, verbose = false, tag = false,
-        loadfile=false, kwargs...)
+    data, filepath = produce_or_load(
+        run_estimator,
+        params,
+        savedir;
+        filename=filestem,
+        verbose=false,
+        tag=false,
+        loadfile=false,
+        kwargs...,
+    )
     return data, filepath, filestem
 end
 

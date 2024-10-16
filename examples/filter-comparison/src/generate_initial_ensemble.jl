@@ -40,7 +40,6 @@ macro worker_imports()
                 return ensemble
             end
 
-
             function (M::DistributedOperator)(member::Dict{Symbol,Any})
                 return M.op(member)
             end
@@ -56,7 +55,7 @@ function get_distributed_operator(op, worker_pool, distributed_type, kwargs)
         return op
     end
     distributed_type = Val(distributed_type)
-    dist_op = DistributedOperator(op, worker_pool, distributed_type; kwargs...)
+    return dist_op = DistributedOperator(op, worker_pool, distributed_type; kwargs...)
 end
 
 function generate_initial_ensemble(params::Dict)
@@ -64,13 +63,13 @@ function generate_initial_ensemble(params::Dict)
     ensemble_size = params["size"]
     prior_type = params["prior"]
 
-    members = Vector{Dict{Symbol, Any}}(undef, ensemble_size)
+    members = Vector{Dict{Symbol,Any}}(undef, ensemble_size)
     if prior_type == "gaussian"
         rng = Random.MersenneTwister(seed)
         prior_mean, prior_std = params["prior_params"]
         for i in 1:ensemble_size
             data = prior_mean .+ prior_std .* randn(rng, 3)
-            state = Dict{Symbol, Any}(:state => data)
+            state = Dict{Symbol,Any}(:state => data)
             members[i] = state
         end
     else
@@ -89,8 +88,8 @@ function generate_initial_ensemble(params::Dict)
     observations_gt = data_gt["observations"]
     observation_times = data_gt["observation_times"]
 
-    transitioner = Lorenz63Model(; params = params["ground_truth"])
-    observer = NoisyObserver(get_state_keys(transitioner); params = params["ground_truth"]);
+    transitioner = Lorenz63Model(; params=params["ground_truth"])
+    observer = NoisyObserver(get_state_keys(transitioner); params=params["ground_truth"])
 
     t_index_end = params_estimator["num_timesteps"]
     observation_times = observation_times[1:t_index_end]
@@ -123,7 +122,17 @@ function generate_initial_ensemble(params::Dict)
             kwargs = get(exec_params, "observer_distributed_kwargs", ())
             observer = get_distributed_operator(observer, worker_pool, t, kwargs)
         end
-        filter_loop(ensemble, t0, estimator, transitioner, observer, observations_gt, observation_times, params_estimator; name="initial $(params_estimator["algorithm"])")
+        filter_loop(
+            ensemble,
+            t0,
+            estimator,
+            transitioner,
+            observer,
+            observations_gt,
+            observation_times,
+            params_estimator;
+            name="initial $(params_estimator["algorithm"])",
+        )
     finally
         if cleanup_workers
             rmprocs(workers)
@@ -131,9 +140,8 @@ function generate_initial_ensemble(params::Dict)
     end
 end
 
-
 function initial_ensemble_stem(params::Dict)
-    ground_truth_stem(params)*"-"*string(hash(params["ensemble"]), base=62)
+    return ground_truth_stem(params) * "-" * string(hash(params["ensemble"]); base=62)
 end
 
 function produce_or_load_initial_ensemble(params::Dict; kwargs...)
@@ -145,9 +153,16 @@ function produce_or_load_initial_ensemble(params::Dict; kwargs...)
     wsave(params_file, params_ensemble)
 
     savedir = datadir("initial_ensemble", "data")
-    data, filepath = produce_or_load(generate_initial_ensemble, params_ensemble, savedir;
-        filename=filestem, verbose = false, tag = false,
-        loadfile=false, kwargs...)
+    data, filepath = produce_or_load(
+        generate_initial_ensemble,
+        params_ensemble,
+        savedir;
+        filename=filestem,
+        verbose=false,
+        tag=false,
+        loadfile=false,
+        kwargs...,
+    )
     return data, filepath, filestem
 end
 

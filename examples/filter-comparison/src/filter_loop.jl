@@ -1,8 +1,18 @@
 
-import Random
+using Random: Random
 using ProgressLogging: @progress
 
-function filter_loop(ensemble, t0, estimator, transitioner, observer, observations_gt, observation_times, params_estimator; name="Time")
+function filter_loop(
+    ensemble,
+    t0,
+    estimator,
+    transitioner,
+    observer,
+    observations_gt,
+    observation_times,
+    params_estimator;
+    name="Time",
+)
     Random.seed!(0x3289745)
     xor_seed!(observer, UInt64(0x375ef928))
 
@@ -22,10 +32,11 @@ function filter_loop(ensemble, t0, estimator, transitioner, observer, observatio
     ensembles = []
     progress_name = name * ": "
     @time begin
-        push!(ensembles, (; ensemble, t = t0))
-        @progress name=progress_name for (t, y_obs) in zip(observation_times, observations_gt)
+        push!(ensembles, (; ensemble, t=t0))
+        @progress name = progress_name for (t, y_obs) in
+                                           zip(observation_times, observations_gt)
             ## Advance ensemble to time t.
-            ensemble = transitioner(ensemble, t0, t; inplace = false)
+            ensemble = transitioner(ensemble, t0, t; inplace=false)
 
             ## Keep ensemble separated.
             if transition_noise != 0
@@ -36,7 +47,10 @@ function filter_loop(ensemble, t0, estimator, transitioner, observer, observatio
 
             if assimilation_type == "sequential"
                 y_obs_vec = get_member_vector(ensemble, y_obs)
-                append!(observers, IndexObserver(observer, i) for i in length(observers):length(y_obs_vec))
+                append!(
+                    observers,
+                    IndexObserver(observer, i) for i in length(observers):length(y_obs_vec)
+                )
                 y_obs = [observer_i(y_obs) for observer_i in observers[1:length(y_obs_vec)]]
                 push!(ensembles, (; ensemble, t))
             else
@@ -46,17 +60,26 @@ function filter_loop(ensemble, t0, estimator, transitioner, observer, observatio
                 ## Take observation at time t.
                 ensemble_obs = observer_i(ensemble)
                 ensemble_obs_clean, ensemble_obs_noisy = split_clean_noisy(
-                    observer, ensemble_obs)
+                    observer, ensemble_obs
+                )
 
                 ## Record.
                 if assimilation_type != "sequential"
-                    push!(ensembles, (; ensemble, ensemble_obs_clean, ensemble_obs_noisy, t))
+                    push!(
+                        ensembles, (; ensemble, ensemble_obs_clean, ensemble_obs_noisy, t)
+                    )
                 end
 
                 ## Assimilate observation
-                log_data = Dict{Symbol, Any}()
+                log_data = Dict{Symbol,Any}()
                 (posterior, timing...) = @timed assimilate_data(
-                    estimator, ensemble, ensemble_obs_clean, ensemble_obs_noisy, y_obs_i, log_data)
+                    estimator,
+                    ensemble,
+                    ensemble_obs_clean,
+                    ensemble_obs_noisy,
+                    y_obs_i,
+                    log_data,
+                )
                 log_data[:timing] = timing
                 ensemble = posterior
 
@@ -71,10 +94,6 @@ function filter_loop(ensemble, t0, estimator, transitioner, observer, observatio
     end
     println("  ^ timing for running filter loop ($name)")
 
-    data = Dict(
-        "ensembles" => ensembles,
-        "logs" => logs,
-        "ensemble" => ensembles[end],
-    )
+    data = Dict("ensembles" => ensembles, "logs" => logs, "ensemble" => ensembles[end])
     return data
 end

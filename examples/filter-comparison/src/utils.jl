@@ -4,7 +4,7 @@ using Statistics: mean, var
 
 function my_pairplot(ensemble::AbstractEnsemble)
     data = get_ensemble_matrix(ensemble)'
-    my_pairplot(data)
+    return my_pairplot(data)
 end
 
 function my_pairplot(data::AbstractArray)
@@ -12,13 +12,13 @@ function my_pairplot(data::AbstractArray)
     colorrange = (0, size(data, 1))
     markersize = 5
     alpha = 1
-    PairPlots.pairplot(
+    return PairPlots.pairplot(
         data => (
-            PairPlots.HexBin(;colormap=:Blues, colorrange),
-            PairPlots.Scatter(;color=:red, markersize, alpha),
-            PairPlots.MarginDensity(;bandwidth=0.1),
+            PairPlots.HexBin(; colormap=:Blues, colorrange),
+            PairPlots.Scatter(; color=:red, markersize, alpha),
+            PairPlots.MarginDensity(; bandwidth=0.1),
             PairPlots.MarginHist(),
-        )
+        ),
     )
 end
 
@@ -30,7 +30,6 @@ function show_interactive(fig)
     end
 end
 
-
 function get_ground_truth_iterator(ensembles_ts, observation_times)
     gt_index = 1
     gt_indices = Int64[]
@@ -40,13 +39,17 @@ function get_ground_truth_iterator(ensembles_ts, observation_times)
             gt_index += 1
         end
         if gt_index > length(observation_times)
-            error("Comparing at time $(t) is impossible because final ground-truth observation is at time $(observation_times[end])")
+            error(
+                "Comparing at time $(t) is impossible because final ground-truth observation is at time $(observation_times[end])",
+            )
         end
         if observation_times[gt_index] != t
-            error("No observation at time $(t). Closest are $(observation_times[gt_index-1]) and $(observation_times[gt_index])")
+            error(
+                "No observation at time $(t). Closest are $(observation_times[gt_index-1]) and $(observation_times[gt_index])",
+            )
         end
         push!(gt_indices, gt_index)
-        if i == length(ensembles_ts) || t < ensembles_ts[i+1]
+        if i == length(ensembles_ts) || t < ensembles_ts[i + 1]
             push!(post_assim_indices, i)
         end
     end
@@ -72,11 +75,7 @@ function compute_metrics(ensembles; ts_gt=nothing, ground_truth_states_vec=nothi
     ts = [e.t for e in ensembles]
 
     if isnothing(ts_gt)
-        return (;
-        ts,
-        vars_vec,
-        means_vec,
-    )
+        return (; ts, vars_vec, means_vec)
     end
     gt_indices, post_assim_indices = get_ground_truth_iterator(ts, ts_gt)
     rmses = compute_errors(gt_indices, means_vec, ground_truth_states_vec)
@@ -90,7 +89,7 @@ function compute_metrics(ensembles; ts_gt=nothing, ground_truth_states_vec=nothi
         post_assim_indices,
         rmses,
         spread,
-        post_assim_rmses = (rmses[i] for i in post_assim_indices),
-        post_assim_spread = (spread[i] for i in post_assim_indices),
+        post_assim_rmses=(rmses[i] for i in post_assim_indices),
+        post_assim_spread=(spread[i] for i in post_assim_indices),
     )
 end
