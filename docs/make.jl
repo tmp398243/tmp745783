@@ -91,7 +91,7 @@ for (ex, pth) in examples
         runner_code = gen_runner_code(pth, in_dir, out_dir)
 
         open(runner_path, "w") do f
-            write(f, runner_code)
+            return write(f, runner_code)
         end
         cmd = `$(Base.julia_cmd()) -- "$(runner_path)"`
 
