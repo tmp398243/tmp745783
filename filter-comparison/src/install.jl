@@ -39,7 +39,7 @@ if basename(dirname(Base.active_project())) in ["v1.10", "v1.9", "v1.8", "v1.7",
         Ensembles.install(:NormalizingFlowFilters)
     end
 
-    Pkg.add(["LinearAlgebra", "Random", "CairoMakie", "Statistics", "PairPlots", "ImageFiltering", "JLD2", "Format", "Configurations"])
+    Pkg.add(["LinearAlgebra", "Random", "CairoMakie", "Statistics", "PairPlots", "ImageFiltering", "JLD2", "Format", "Configurations", "TerminalLoggers", "ProgressLogging", "Logging"])
 
     Pkg.instantiate()
 end
