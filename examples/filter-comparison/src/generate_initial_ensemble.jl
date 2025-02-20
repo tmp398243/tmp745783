@@ -43,7 +43,7 @@ macro worker_imports()
             function (M::DistributedOperator)(member::Dict{Symbol,Any})
                 return M.op(member)
             end
-        end
+        end,
     )
 end
 

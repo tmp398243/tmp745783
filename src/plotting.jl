@@ -55,7 +55,7 @@ function plot_disjoint_lines!(
         end
         end_idx = get_next_jump_idx(times, start_idx)
         if do_colors
-            color = 1:(end_idx-start_idx+1)
+            color = 1:(end_idx - start_idx + 1)
         end
         if isnothing(color)
             sc = scatterlines!(
@@ -157,7 +157,7 @@ function plot_state_over_time(
     figs = [fig]
     if !isnothing(max_dt) && ts[1] + max_dt < ts[end]
         high = ts[1]
-        for low in ts[1]:max_dt:(ts[end]-max_dt)
+        for low in ts[1]:max_dt:(ts[end] - max_dt)
             high = min(low + max_dt, ts[end])
             fig = plot_this_thing(; xlims=(; low, high))
             push!(figs, fig)
@@ -196,7 +196,7 @@ function plot_error_metric_over_time(
     figs = [fig]
     if !isnothing(max_dt) && ts[1] + max_dt < ts[end]
         high = ts[1]
-        for low in ts[1]:max_dt:(ts[end]-max_dt)
+        for low in ts[1]:max_dt:(ts[end] - max_dt)
             high = min(low + max_dt, ts[end])
             fig = plot_this_thing(; xlims=(; low, high))
             push!(figs, fig)
